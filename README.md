@@ -16,13 +16,6 @@ Argus is the central monitoring solution for the Homelab, built on Prometheus an
 
 The stack is deployed via GitHub Actions on the `gaia` manager node utilizing Docker Swarm.
 
-### Initial Setup (Manual)
-Run the setup script on the manager node once to prepare the directories:
-```bash
-./setup_host.sh
-```
-
 ### CI/CD Pipeline
 1. **Checkout**: Recursively clones the repo and submodules.
-2. **Copy Configs**: Updates `/opt/argus/configs/` with the latest configuration files.
-3. **Deploy**: Executes `scripts/deploy.sh` to update the `argus` stack.
+2. **Deploy**: Executes `scripts/deploy.sh` to update the `argus` stack.

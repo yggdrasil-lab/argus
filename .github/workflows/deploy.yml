@@ -15,10 +15,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Copy configs
-        run: |
-          cp configs/prometheus/prometheus.yml /opt/argus/configs/prometheus/
-
       - name: Deploy stack
         run: |
           chmod +x scripts/deploy.sh

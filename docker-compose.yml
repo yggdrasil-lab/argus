@@ -5,8 +5,10 @@ services:
     image: prom/prometheus:latest
     ports:
       - "9090:9090"
+    configs:
+      - source: prometheus_config
+        target: /etc/prometheus/prometheus.yml
     volumes:
-      - /opt/argus/configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     deploy:
       mode: replicated
@@ -97,3 +99,7 @@ volumes:
 networks:
   aether-net:
     external: true
+
+configs:
+  prometheus_config:
+    file: ./configs/prometheus/prometheus.yml
