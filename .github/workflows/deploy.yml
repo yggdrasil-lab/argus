@@ -1,0 +1,25 @@
+name: Deploy Argus
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, gaia]
+    env:
+      DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Copy configs
+        run: |
+          cp configs/prometheus/prometheus.yml /opt/argus/configs/prometheus/
+
+      - name: Deploy stack
+        run: |
+          chmod +x scripts/deploy.sh
+          ./scripts/deploy.sh "argus" docker-compose.yml
