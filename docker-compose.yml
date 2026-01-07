@@ -19,6 +19,7 @@ services:
         traefik.http.routers.prometheus.entrypoints: websecure
         traefik.http.routers.prometheus.middlewares: authelia
         traefik.http.services.prometheus.loadbalancer.server.port: 9090
+        traefik.http.routers.prometheus.tls: "true"
         # Portainer
         com.docker.compose.project: argus
     networks:
@@ -44,6 +45,7 @@ services:
         traefik.http.routers.grafana.entrypoints: websecure
         traefik.http.routers.grafana.middlewares: authelia
         traefik.http.services.grafana.loadbalancer.server.port: 3000
+        traefik.http.routers.grafana.tls: "true"
         # Portainer
         com.docker.compose.project: argus
     networks:
