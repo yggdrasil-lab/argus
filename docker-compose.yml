@@ -22,7 +22,7 @@ services:
         # Portainer
         com.docker.compose.project: argus
     networks:
-      - default
+      - internal
       - aether-net
     labels:
       com.docker.compose.project: argus
@@ -47,7 +47,7 @@ services:
         # Portainer
         com.docker.compose.project: argus
     networks:
-      - default
+      - internal
       - aether-net
     labels:
       com.docker.compose.project: argus
@@ -66,7 +66,7 @@ services:
     deploy:
       mode: global
     networks:
-      - default
+      - internal
     labels:
       com.docker.compose.project: argus
 
@@ -81,7 +81,7 @@ services:
     deploy:
       mode: global
     networks:
-      - default
+      - internal
     labels:
       com.docker.compose.project: argus
 
@@ -93,6 +93,9 @@ volumes:
 networks:
   aether-net:
     external: true
+  internal:
+    driver: overlay
+    attachable: true
 
 configs:
   prometheus_config:
