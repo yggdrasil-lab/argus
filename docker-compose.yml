@@ -1,11 +1,22 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   prometheus:
     image: prom/prometheus:latest
     configs:
       - source: prometheus_config
         target: /etc/prometheus/prometheus.yml
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=30d
     volumes:
       - prometheus_data:/prometheus
+    logging: *default-logging
     deploy:
       mode: replicated
       replicas: 1
@@ -32,6 +43,7 @@ services:
     image: grafana/grafana:latest
     volumes:
       - grafana_data:/var/lib/grafana
+    logging: *default-logging
     deploy:
       mode: replicated
       replicas: 1
@@ -66,6 +78,7 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
+    logging: *default-logging
     deploy:
       mode: global
     networks:
@@ -82,6 +95,7 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
+    logging: *default-logging
     deploy:
       mode: global
     networks:

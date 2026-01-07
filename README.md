@@ -21,6 +21,15 @@ The stack is deployed via GitHub Actions on the `gaia` manager node utilizing Do
 1. **Checkout**: Recursively clones the repo and submodules.
 2. **Deploy**: Executes `scripts/deploy.sh` to update the `argus` stack.
 
+## Data Retention & Maintenance
+
+- **Prometheus Data**:
+  - **Retention**: Metrics are stored for **30 days**.
+  - **Configuration**: This is set via command-line flags (`--storage.tsdb.retention.time=30d`) in `docker-compose.yml`, as retention is a system-level setting that cannot be defined in `prometheus.yml`.
+- **Logs**:
+  - **Rotation**: All containers utilize the `json-file` driver with automatic rotation.
+  - **Limits**: Max size `10MB` per file, keeping `3` files (Total `30MB` per container).
+
 ## Initialization & Configuration
 
 ### 1. Configure Grafana Data Source
