@@ -16,7 +16,7 @@ services:
         # Traefik & Authelia
         traefik.enable: "true"
         traefik.http.routers.prometheus.rule: Host(`prometheus.${DOMAIN_NAME}`)
-        traefik.http.routers.prometheus.entrypoints: https
+        traefik.http.routers.prometheus.entrypoints: websecure
         traefik.http.routers.prometheus.middlewares: authelia
         traefik.http.services.prometheus.loadbalancer.server.port: 9090
         # Portainer
@@ -41,7 +41,7 @@ services:
         # Traefik & Authelia
         traefik.enable: "true"
         traefik.http.routers.grafana.rule: Host(`grafana.${DOMAIN_NAME}`)
-        traefik.http.routers.grafana.entrypoints: https
+        traefik.http.routers.grafana.entrypoints: websecure
         traefik.http.routers.grafana.middlewares: authelia
         traefik.http.services.grafana.loadbalancer.server.port: 3000
         # Portainer
