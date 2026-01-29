@@ -9,11 +9,17 @@ jobs:
     runs-on: [self-hosted, gaia]
     env:
       DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
+      OIDC_GRAFANA_CLIENT_SECRET: ${{ secrets.OIDC_GRAFANA_CLIENT_SECRET }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           submodules: recursive
+
+      - name: Setup Secrets
+        run: |
+          chmod +x scripts/ensure_secret.sh
+          echo "OIDC_GRAFANA_CLIENT_SECRET_NAME=$(echo "$OIDC_GRAFANA_CLIENT_SECRET" | ./scripts/ensure_secret.sh cerberus_grafana_client_secret)" >> $GITHUB_ENV
 
       - name: Deploy stack
         run: |
