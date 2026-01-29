@@ -19,7 +19,7 @@ jobs:
       - name: Setup Secrets
         run: |
           chmod +x scripts/ensure_secret.sh
-          echo "OIDC_GRAFANA_CLIENT_SECRET_NAME=$(echo "$OIDC_GRAFANA_CLIENT_SECRET" | ./scripts/ensure_secret.sh cerberus_grafana_client_secret)" >> $GITHUB_ENV
+          echo "OIDC_GRAFANA_CLIENT_SECRET_NAME=$(echo "$OIDC_GRAFANA_CLIENT_SECRET" | ./scripts/ensure_secret.sh argus_grafana_oidc_secret)" >> $GITHUB_ENV
 
       - name: Deploy stack
         run: |
