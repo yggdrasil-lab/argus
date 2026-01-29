@@ -55,7 +55,11 @@ services:
       - GF_AUTH_GENERIC_OAUTH_API_URL=https://auth.${DOMAIN_NAME}/api/oidc/userinfo
       - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(groups[*], 'admins') && 'Admin' || 'Viewer'
     secrets:
-      - argus_grafana_oidc_secret
+      - source: argus_grafana_oidc_secret
+        target: /run/secrets/argus_grafana_oidc_secret
+        uid: "472"
+        gid: "472"
+        mode: 0440
     deploy:
       mode: replicated
       replicas: 1
