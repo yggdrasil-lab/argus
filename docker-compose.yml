@@ -48,14 +48,14 @@ services:
       - GF_AUTH_GENERIC_OAUTH_ENABLED=true
       - GF_AUTH_GENERIC_OAUTH_NAME=Authelia
       - GF_AUTH_GENERIC_OAUTH_CLIENT_ID=grafana
-      - GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET_FILE=/run/secrets/cerberus_grafana_client_secret
+      - GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET_FILE=/run/secrets/argus_grafana_oidc_secret
       - GF_AUTH_GENERIC_OAUTH_SCOPES=openid profile email groups
       - GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://auth.${DOMAIN_NAME}/api/oidc/authorization
       - GF_AUTH_GENERIC_OAUTH_TOKEN_URL=https://auth.${DOMAIN_NAME}/api/oidc/token
       - GF_AUTH_GENERIC_OAUTH_API_URL=https://auth.${DOMAIN_NAME}/api/oidc/userinfo
       - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(groups[*], 'admins') && 'Admin' || 'Viewer'
     secrets:
-      - cerberus_grafana_client_secret
+      - argus_grafana_oidc_secret
     deploy:
       mode: replicated
       replicas: 1
@@ -120,7 +120,7 @@ volumes:
 
 
 secrets:
-  cerberus_grafana_client_secret:
+  argus_grafana_oidc_secret:
     external: true
     name: ${OIDC_GRAFANA_CLIENT_SECRET_NAME}
 
