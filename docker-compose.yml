@@ -23,26 +23,36 @@ services:
       placement:
         constraints:
           - node.role == manager
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
       labels:
-        # Traefik & Authelia
-        traefik.enable: "true"
-        traefik.http.routers.prometheus.rule: Host(`prometheus.${DOMAIN_NAME}`)
-        traefik.http.routers.prometheus.entrypoints: websecure
-        traefik.http.routers.prometheus.middlewares: authelia
-        traefik.http.services.prometheus.loadbalancer.server.port: 9090
-        traefik.http.routers.prometheus.tls: "true"
-        # Portainer
-        com.docker.compose.project: argus
+        - "traefik.enable=true"
+        - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.prometheus.entrypoints=websecure"
+        - "traefik.http.routers.prometheus.middlewares=authelia"
+        - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+        - "traefik.http.routers.prometheus.tls=true"
+        - "homepage.group=Monitoring"
+        - "homepage.name=Prometheus"
+        - "homepage.icon=prometheus.png"
+        - "homepage.href=https://prometheus.${DOMAIN_NAME}"
+        - "homepage.description=Time-Series Metrics"
     networks:
-      - internal
-      - aether-net
-    labels:
-      com.docker.compose.project: argus
+      internal:
+      aether-net:
+        aliases:
+          - prometheus
 
   grafana:
     image: grafana/grafana:latest
     volumes:
       - grafana_data:/var/lib/grafana
+    configs:
+      - source: grafana_datasource
+        target: /etc/grafana/provisioning/datasources/prometheus.yaml
     environment:
       - GF_SERVER_ROOT_URL=https://grafana.${DOMAIN_NAME}
       - GF_AUTH_GENERIC_OAUTH_ENABLED=true
@@ -56,35 +66,44 @@ services:
       - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(groups[*], 'admins') && 'Admin' || 'Viewer'
     secrets:
       - argus_grafana_oidc_secret
+    logging: *default-logging
     deploy:
       mode: replicated
       replicas: 1
       placement:
         constraints:
           - node.role == manager
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
       labels:
-        # Traefik & Authelia
-        traefik.enable: "true"
-        traefik.http.routers.grafana.rule: Host(`grafana.${DOMAIN_NAME}`)
-        traefik.http.routers.grafana.entrypoints: websecure
-        traefik.http.services.grafana.loadbalancer.server.port: 3000
-        traefik.http.routers.grafana.tls: "true"
-        # Portainer
-        com.docker.compose.project: argus
+        - "traefik.enable=true"
+        - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.grafana.entrypoints=websecure"
+        - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+        - "traefik.http.routers.grafana.tls=true"
+        - "homepage.group=Monitoring"
+        - "homepage.name=Grafana"
+        - "homepage.icon=grafana.png"
+        - "homepage.href=https://grafana.${DOMAIN_NAME}"
+        - "homepage.description=Metrics & Dashboards"
     networks:
       - internal
       - aether-net
-    labels:
-      com.docker.compose.project: argus
 
   node-exporter:
     image: prom/node-exporter:latest
-    hostname: "{{.Node.Hostname}}"
     command:
       - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
       - '--path.rootfs=/rootfs'
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    ports:
+      - target: 9100
+        published: 9100
+        mode: host
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -92,14 +111,19 @@ services:
     logging: *default-logging
     deploy:
       mode: global
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
     networks:
       - internal
-    labels:
-      com.docker.compose.project: argus
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
-    hostname: "{{.Node.Hostname}}"
+    command:
+      - --housekeeping_interval=10s
+      - --docker_only=true
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
@@ -109,15 +133,17 @@ services:
     logging: *default-logging
     deploy:
       mode: global
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
     networks:
       - internal
-    labels:
-      com.docker.compose.project: argus
 
 volumes:
   prometheus_data:
   grafana_data:
-
 
 secrets:
   argus_grafana_oidc_secret:
@@ -134,3 +160,5 @@ networks:
 configs:
   prometheus_config:
     file: ./configs/prometheus/prometheus.yml
+  grafana_datasource:
+    file: ./configs/grafana/datasources/prometheus.yaml

@@ -8,11 +8,15 @@ scrape_configs:
       - targets: ['localhost:9090']
 
   - job_name: 'node-exporter'
-    dns_sd_configs:
-      - names:
-          - 'tasks.node-exporter'
-        type: 'A'
-        port: 9100
+    static_configs:
+      - targets: ['192.168.86.166:9100']
+        labels:
+          instance: 'gaia'
+          nodename: 'gaia'
+      - targets: ['192.168.86.185:9100']
+        labels:
+          instance: 'muspelheim'
+          nodename: 'muspelheim'
 
   - job_name: 'cadvisor'
     dns_sd_configs:
@@ -20,3 +24,7 @@ scrape_configs:
           - 'tasks.cadvisor'
         type: 'A'
         port: 8080
+
+  - job_name: 'traefik'
+    static_configs:
+      - targets: ['tasks.olympus_traefik:8082']
