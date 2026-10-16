@@ -9,7 +9,7 @@ jobs:
   deploy:
     runs-on: [self-hosted, gaia]
     env:
-      DOMAIN_NAME: ${{ vars.DOMAIN_NAME || 'tienzo.net' }}
+      DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
       OIDC_GRAFANA_CLIENT_SECRET: ${{ secrets.OIDC_GRAFANA_CLIENT_SECRET }}
     steps:
       - name: Checkout code

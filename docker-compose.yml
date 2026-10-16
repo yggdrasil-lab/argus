@@ -30,7 +30,7 @@ services:
           memory: 256M
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN_NAME:-tienzo.net}`)"
+        - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN_NAME}`)"
         - "traefik.http.routers.prometheus.entrypoints=websecure"
         - "traefik.http.routers.prometheus.middlewares=authelia"
         - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
@@ -38,7 +38,7 @@ services:
         - "homepage.group=Monitoring"
         - "homepage.name=Prometheus"
         - "homepage.icon=prometheus.png"
-        - "homepage.href=https://prometheus.${DOMAIN_NAME:-tienzo.net}"
+        - "homepage.href=https://prometheus.${DOMAIN_NAME}"
         - "homepage.description=Time-Series Metrics"
     networks:
       internal:
@@ -54,15 +54,15 @@ services:
       - source: grafana_datasource
         target: /etc/grafana/provisioning/datasources/prometheus.yaml
     environment:
-      - GF_SERVER_ROOT_URL=https://grafana.${DOMAIN_NAME:-tienzo.net}
+      - GF_SERVER_ROOT_URL=https://grafana.${DOMAIN_NAME}
       - GF_AUTH_GENERIC_OAUTH_ENABLED=true
       - GF_AUTH_GENERIC_OAUTH_NAME=Authelia
       - GF_AUTH_GENERIC_OAUTH_CLIENT_ID=grafana
       - GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE=/run/secrets/argus_grafana_oidc_secret
       - GF_AUTH_GENERIC_OAUTH_SCOPES=openid profile email groups
-      - GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://auth.${DOMAIN_NAME:-tienzo.net}/api/oidc/authorization
-      - GF_AUTH_GENERIC_OAUTH_TOKEN_URL=https://auth.${DOMAIN_NAME:-tienzo.net}/api/oidc/token
-      - GF_AUTH_GENERIC_OAUTH_API_URL=https://auth.${DOMAIN_NAME:-tienzo.net}/api/oidc/userinfo
+      - GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://auth.${DOMAIN_NAME}/api/oidc/authorization
+      - GF_AUTH_GENERIC_OAUTH_TOKEN_URL=https://auth.${DOMAIN_NAME}/api/oidc/token
+      - GF_AUTH_GENERIC_OAUTH_API_URL=https://auth.${DOMAIN_NAME}/api/oidc/userinfo
       - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(groups[*], 'admins') && 'Admin' || 'Viewer'
     secrets:
       - argus_grafana_oidc_secret
@@ -80,14 +80,14 @@ services:
           memory: 128M
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN_NAME:-tienzo.net}`)"
+        - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN_NAME}`)"
         - "traefik.http.routers.grafana.entrypoints=websecure"
         - "traefik.http.services.grafana.loadbalancer.server.port=3000"
         - "traefik.http.routers.grafana.tls=true"
         - "homepage.group=Monitoring"
         - "homepage.name=Grafana"
         - "homepage.icon=grafana.png"
-        - "homepage.href=https://grafana.${DOMAIN_NAME:-tienzo.net}"
+        - "homepage.href=https://grafana.${DOMAIN_NAME}"
         - "homepage.description=Metrics & Dashboards"
     networks:
       - internal
