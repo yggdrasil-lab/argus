@@ -7,6 +7,8 @@ x-logging: &default-logging
 services:
   prometheus:
     image: prom/prometheus:latest
+    labels:
+      - "com.docker.compose.project=${STACK_NAME}"
     configs:
       - source: prometheus_config
         target: /etc/prometheus/prometheus.yml
@@ -48,6 +50,8 @@ services:
 
   grafana:
     image: grafana/grafana:latest
+    labels:
+      - "com.docker.compose.project=${STACK_NAME}"
     volumes:
       - grafana_data:/var/lib/grafana
     configs:
@@ -95,6 +99,8 @@ services:
 
   node-exporter:
     image: prom/node-exporter:latest
+    labels:
+      - "com.docker.compose.project=${STACK_NAME}"
     command:
       - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
@@ -121,6 +127,8 @@ services:
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
+    labels:
+      - "com.docker.compose.project=${STACK_NAME}"
     command:
       - --housekeeping_interval=10s
       - --docker_only=true
