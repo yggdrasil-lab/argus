@@ -129,23 +129,32 @@ services:
     image: gcr.io/cadvisor/cadvisor:latest
     labels:
       - "com.docker.compose.project=${STACK_NAME}"
+    environment:
+      - GOMEMLIMIT=450MiB
     command:
-      - --housekeeping_interval=10s
+      - --housekeeping_interval=15s
       - --docker_only=true
+      - --disable_metrics=advtcp,cpu_topology,cpuset,hugetlb,memory_numa,process,referenced_memory,resctrl,sched,tcp,udp,disk,diskIO
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:8080/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     logging: *default-logging
     deploy:
       mode: global
       resources:
         limits:
-          memory: 256M
+          memory: 512M
         reservations:
-          memory: 128M
+          memory: 256M
     networks:
       - internal
 
