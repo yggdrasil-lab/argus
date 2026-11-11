@@ -18,6 +18,12 @@ services:
       - --storage.tsdb.retention.time=30d
     volumes:
       - prometheus_data:/prometheus
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:9090/-/healthy || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     logging: *default-logging
     deploy:
       mode: replicated
@@ -34,7 +40,7 @@ services:
         - "traefik.enable=true"
         - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN_NAME}`)"
         - "traefik.http.routers.prometheus.entrypoints=websecure"
-        - "traefik.http.routers.prometheus.middlewares=authelia"
+        - "traefik.http.routers.prometheus.middlewares=authentik@docker"
         - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
         - "traefik.http.routers.prometheus.tls=true"
         - "homepage.group=Monitoring"
@@ -60,16 +66,22 @@ services:
     environment:
       - GF_SERVER_ROOT_URL=https://grafana.${DOMAIN_NAME}
       - GF_AUTH_GENERIC_OAUTH_ENABLED=true
-      - GF_AUTH_GENERIC_OAUTH_NAME=Authelia
+      - GF_AUTH_GENERIC_OAUTH_NAME=Authentik
       - GF_AUTH_GENERIC_OAUTH_CLIENT_ID=grafana
       - GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE=/run/secrets/argus_grafana_oidc_secret
       - GF_AUTH_GENERIC_OAUTH_SCOPES=openid profile email groups
-      - GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://auth.${DOMAIN_NAME}/api/oidc/authorization
-      - GF_AUTH_GENERIC_OAUTH_TOKEN_URL=https://auth.${DOMAIN_NAME}/api/oidc/token
-      - GF_AUTH_GENERIC_OAUTH_API_URL=https://auth.${DOMAIN_NAME}/api/oidc/userinfo
+      - GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://id.${DOMAIN_NAME}/application/o/authorize/
+      - GF_AUTH_GENERIC_OAUTH_TOKEN_URL=https://id.${DOMAIN_NAME}/application/o/token/
+      - GF_AUTH_GENERIC_OAUTH_API_URL=https://id.${DOMAIN_NAME}/application/o/userinfo/
       - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(groups[*], 'admins') && 'Admin' || 'Viewer'
     secrets:
       - argus_grafana_oidc_secret
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     logging: *default-logging
     deploy:
       mode: replicated
@@ -114,6 +126,12 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:9100/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     logging: *default-logging
     deploy:
       mode: global
