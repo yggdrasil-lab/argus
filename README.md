@@ -25,12 +25,12 @@ I provide the **Eyes and Ears** for the ecosystem. My mission is to collect, sto
 
 1. **Exporters (Node/cAdvisor)**: Run on every node (Global mode) to scrape raw hardware and container metrics.
 2. **Prometheus**: Scrapes Node Exporter (Gaia & Muspelheim), cAdvisor, and Traefik metrics (`:8082`) over `aether-net` and `internal`.
-3. **Grafana**: Queries Prometheus and visualizes dashboards. Accessible via Traefik HTTPS with Authelia OIDC SSO.
+3. **Grafana**: Queries Prometheus and visualizes dashboards. Accessible via Traefik HTTPS with Authentik OIDC SSO.
 
 ## Prerequisites
 
 * **Docker Swarm**: This stack is designed to run on a Swarm cluster.
-* **Authelia (Cerberus)**: Required for OIDC Single Sign-On.
+* **Authentik (Cerberus)**: Required for OIDC Single Sign-On.
 * **Traefik (Olympus)**: Required for ingress routing.
 
 ## Configuration Structure
@@ -51,8 +51,8 @@ chmod +x /tmp/deploy.sh
 
 ## Services
 
-* **Grafana**: `https://grafana.${DOMAIN_NAME}` (Protected by Authelia OIDC).
-* **Prometheus**: `https://prometheus.${DOMAIN_NAME}` (Protected by Authelia ForwardAuth).
+* **Grafana**: `https://grafana.${DOMAIN_NAME}` (Protected by Authentik OIDC).
+* **Prometheus**: `https://prometheus.${DOMAIN_NAME}` (Protected by Authentik ForwardAuth).
 
 ## Dashboards
 
